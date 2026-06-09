@@ -1,33 +1,44 @@
 import type { APIRoute } from 'astro';
-import ytdl from '@distube/ytdl-core';
-import { Readable } from 'node:stream';
 
 export const GET: APIRoute = async ({ request }) => {
   const urlObj = new URL(request.url);
   const videoUrl = urlObj.searchParams.get('url');
   const type = urlObj.searchParams.get('type') || 'mp4';
-  const title = urlObj.searchParams.get('title') || 'video';
 
   if (!videoUrl) {
     return new Response('URL is required', { status: 400 });
   }
 
   try {
-    // Basic bot protection bypass trick for ytdl-core
-    const nodeStream = ytdl(videoUrl, {
-      quality: type === 'mp3' ? 'highestaudio' : 'highest',
-      filter: type === 'mp3' ? 'audioonly' : 'audioandvideo',
-    });
+    // Extract video ID from youtube URL
+    let videoId = '';
+    const vUrl = new URL(videoUrl);
+    if (vUrl.hostname.includes('youtu.be')) {
+      videoId = vUrl.pathname.slice(1);
+    } else {
+      videoId = vUrl.searchParams.get('v') || '';
+    }
 
-    const webStream = Readable.toWeb(nodeStream);
-    const ext = type === 'mp3' ? 'mp3' : 'mp4';
-    const safeTitle = title.replace(/[^a-zA-Z0-9 ]/g, "").trim().replace(/\s+/g, "_");
+    // Strip out any query params if present in youtu.be links
+    if (videoId.includes('?')) {
+      videoId = videoId.split('?')[0];
+    }
 
-    return new Response(webStream as any, {
-      status: 200,
+    if (!videoId) {
+      throw new Error('Invalid YouTube URL');
+    }
+
+    // Use an Invidious instance to proxy the video stream directly. 
+    // This perfectly bypasses YouTube IP blocks and Cloudflare Turnstile blocks!
+    // itag 22 = 720p MP4 (highest quality that includes audio track by default)
+    // itag 140 = 128kbps M4A Audio
+    const itag = type === 'mp3' ? '140' : '22'; 
+    const invidiousUrl = `https://vid.puffyan.us/latest_version?id=${videoId}&itag=${itag}&local=true`;
+
+    return new Response(null, {
+      status: 302,
       headers: {
-        'Content-Type': type === 'mp3' ? 'audio/mpeg' : 'video/mp4',
-        'Content-Disposition': `attachment; filename="${safeTitle}.${ext}"`
+        'Location': invidiousUrl
       }
     });
 
