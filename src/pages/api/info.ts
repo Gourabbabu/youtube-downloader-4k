@@ -1,5 +1,4 @@
 import type { APIRoute } from 'astro';
-import youtubedl from 'youtube-dl-exec';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -9,31 +8,30 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: 'URL is required' }), { status: 400 });
     }
 
-    // Fetch video info
-    const info = await youtubedl(url, {
-      dumpSingleJson: true,
-      noWarnings: true,
-      noCallHome: true,
-      noCheckCertificate: true,
-      youtubeSkipDashManifest: true,
-    });
+    // Use a public oembed service which doesn't get blocked to get title and thumbnail
+    const oembedRes = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
+    const info = await oembedRes.json();
 
-    // Filter available formats for resolutions up to 4K and audio
-    // yt-dlp formats have height (for video), acodec (audio codec), vcodec (video codec), ext
-    
+    if (info.error) {
+      throw new Error(info.error);
+    }
+
+    // We don't get formats from oembed, so we'll construct mock formats up to 4K
+    // so the UI can still show all resolution options. Cobalt will handle the best available.
+    const mockFormats = [
+      { height: 2160 },
+      { height: 1440 },
+      { height: 1080 },
+      { height: 720 },
+      { height: 480 },
+      { height: 360 }
+    ];
+
     return new Response(JSON.stringify({
-      title: info.title,
-      thumbnail: info.thumbnail,
-      duration: info.duration_string,
-      formats: info.formats.map((f: any) => ({
-        format_id: f.format_id,
-        ext: f.ext,
-        resolution: f.resolution,
-        height: f.height,
-        vcodec: f.vcodec,
-        acodec: f.acodec,
-        filesize: f.filesize || f.filesize_approx,
-      }))
+      title: info.title || 'YouTube Video',
+      thumbnail: info.thumbnail_url || '',
+      duration: 'HD', // Oembed doesn't give duration, but we can display HD
+      formats: mockFormats
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
