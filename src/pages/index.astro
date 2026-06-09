@@ -1,17 +1,95 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import Downloader from '../components/Downloader.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout 
+  title="Free Online YouTube Downloader 4K | MP4 & MP3"
+  description="Download YouTube videos in 4K resolution or convert them to MP3 audio for free. Our online YouTube downloader is fast, secure, and requires no software installation."
+>
+  <ThemeToggle />
+  
+  <main class="min-h-screen py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+    
+    <div class="w-full mt-10 mb-16">
+      <Downloader />
+    </div>
+
+    <article class="max-w-4xl mx-auto prose dark:prose-invert prose-slate prose-lg">
+      
+      <section class="mb-12 text-center">
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">The Best Free Online YouTube Downloader</h2>
+        <p class="mt-4 text-slate-600 dark:text-slate-400">
+          Welcome to the ultimate tool for downloading and converting YouTube videos. Whether you are looking for a reliable <strong>youtube downloader mp4</strong> tool or simply want to extract high-quality audio, our platform is designed to provide you with the fastest and most secure experience available on the web today. We support downloading videos in stunning 4K resolution, ensuring you never compromise on quality.
+        </p>
+      </section>
+
+      <section class="mb-12">
+        <h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">Why Choose Our 4K YouTube Downloader?</h3>
+        <div class="grid md:grid-cols-2 gap-8 mt-6">
+          <div>
+            <h4 class="font-semibold text-lg text-blue-600 dark:text-blue-400">Unmatched Quality</h4>
+            <p class="text-slate-600 dark:text-slate-400 text-sm mt-2">
+              Unlike many other platforms that limit you to 720p or 1080p, our system allows you to download videos exactly as the creator intended. If a video is available in 4K (2160p), our <strong>youtube downloader 4k</strong> feature securely fetches the highest quality video and audio streams and merges them for you effortlessly.
+            </p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-lg text-blue-600 dark:text-blue-400">Completely Free & Online</h4>
+            <p class="text-slate-600 dark:text-slate-400 text-sm mt-2">
+              There is absolutely no need to install suspicious software or browser extensions. Our <strong>online youtube downloader</strong> operates entirely in the cloud. Just paste the URL, select your preferred format, and get your file instantly.
+            </p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-lg text-blue-600 dark:text-blue-400">Multiple Formats Supported</h4>
+            <p class="text-slate-600 dark:text-slate-400 text-sm mt-2">
+              Need a video for offline viewing? Use our standard MP4 output. Just want the music or a podcast? Choose our MP3 option. Our tool serves as an all-in-one media solution, automatically converting the file to the format that suits your needs best.
+            </p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-lg text-blue-600 dark:text-blue-400">Fast & Secure Processing</h4>
+            <p class="text-slate-600 dark:text-slate-400 text-sm mt-2">
+              We prioritize your privacy and security. Our servers process your requests rapidly without storing your downloaded files permanently. The connection is fully encrypted, ensuring that your data and device remain safe from malicious ads or pop-ups common on other downloader sites.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-16">
+        <h3 class="text-2xl font-bold text-slate-800 dark:text-slate-200 text-center mb-8">Frequently Asked Questions (FAQs)</h3>
+        <div class="space-y-6">
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <h4 class="font-bold text-slate-800 dark:text-slate-200">How do I use this YouTube downloader?</h4>
+            <p class="text-slate-600 dark:text-slate-400 mt-2 text-sm">
+              It is incredibly simple. Copy the URL of the YouTube video you want to download, paste it into the input box at the top of this page, and click "Start". Our system will fetch the video details. You can then select whether you want an MP4 video or MP3 audio, choose your desired resolution, and click "Download".
+            </p>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <h4 class="font-bold text-slate-800 dark:text-slate-200">Does the 4K download option include audio?</h4>
+            <p class="text-slate-600 dark:text-slate-400 mt-2 text-sm">
+              Yes! While YouTube natively separates the video and audio streams for resolutions above 1080p, our advanced backend system automatically downloads both the 4K video stream and the highest quality audio stream, merging them together into a single, playable MP4 file before delivering it to you.
+            </p>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <h4 class="font-bold text-slate-800 dark:text-slate-200">Is this online youtube downloader safe to use?</h4>
+            <p class="text-slate-600 dark:text-slate-400 mt-2 text-sm">
+              Absolutely. Our website is completely free of malware, spyware, and intrusive pop-up ads. We do not require you to register an account or provide any personal information. All downloads are processed securely on our servers.
+            </p>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <h4 class="font-bold text-slate-800 dark:text-slate-200">Can I use this tool on my mobile phone?</h4>
+            <p class="text-slate-600 dark:text-slate-400 mt-2 text-sm">
+              Yes, our website is fully responsive and optimized for mobile devices. You can easily download YouTube videos directly to your Android or iOS device using your mobile web browser, no additional apps required.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </article>
+
+    <footer class="mt-auto py-8 text-center text-slate-500 dark:text-slate-500 text-sm">
+      <p>&copy; {new Date().getFullYear()} Free Online YouTube Downloader. All rights reserved.</p>
+      <p class="mt-2 text-xs">Press 'D' to toggle Dark Mode. Press 'C' to clear the search bar.</p>
+    </footer>
+  </main>
+</Layout>

@@ -1,0 +1,212 @@
+---
+---
+<div class="max-w-3xl mx-auto w-full p-6 md:p-10 bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700/50 backdrop-blur-sm transition-all duration-300">
+  <div class="space-y-6">
+    <div class="space-y-2 text-center">
+      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+        YouTube Downloader 4K
+      </h1>
+      <p class="text-slate-500 dark:text-slate-400 font-medium">Download any YouTube video in MP4 or MP3, up to 4K resolution.</p>
+    </div>
+
+    <form id="dl-form" class="relative">
+      <div class="relative flex items-center">
+        <input 
+          type="url" 
+          id="url-input"
+          placeholder="Paste YouTube link here..." 
+          required
+          class="w-full py-4 pl-6 pr-32 text-lg rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-300 shadow-inner"
+        >
+        <button 
+          type="submit" 
+          id="fetch-btn"
+          class="absolute right-2 top-2 bottom-2 px-6 font-bold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        >
+          <span id="fetch-text">Start</span>
+          <svg id="fetch-spinner" class="hidden w-5 h-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        </button>
+      </div>
+    </form>
+
+    <div id="error-message" class="hidden p-4 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/50 text-sm font-medium"></div>
+
+    <div id="preview-card" class="hidden overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 opacity-0 transform translate-y-4 transition-all duration-500">
+      <div class="md:flex">
+        <div class="md:shrink-0 md:w-64 relative bg-black">
+          <img id="video-thumb" class="h-full w-full object-cover" src="" alt="Thumbnail">
+          <div id="video-duration" class="absolute bottom-2 right-2 bg-black/80 text-white text-xs font-bold px-2 py-1 rounded"></div>
+        </div>
+        <div class="p-6 flex flex-col justify-between w-full space-y-4">
+          <div>
+            <h3 id="video-title" class="text-xl font-bold line-clamp-2 text-slate-800 dark:text-slate-100"></h3>
+          </div>
+          
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-sm font-semibold text-slate-500 dark:text-slate-400">Format</label>
+                <select id="format-select" class="w-full p-2.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-shadow font-medium">
+                  <option value="mp4">Video (MP4)</option>
+                  <option value="mp3">Audio (MP3)</option>
+                </select>
+              </div>
+              <div id="res-container" class="space-y-1">
+                <label class="text-sm font-semibold text-slate-500 dark:text-slate-400">Resolution</label>
+                <select id="res-select" class="w-full p-2.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-shadow font-medium">
+                  <option value="2160">4K (2160p)</option>
+                  <option value="1440">2K (1440p)</option>
+                  <option value="1080" selected>HD (1080p)</option>
+                  <option value="720">HD (720p)</option>
+                  <option value="480">SD (480p)</option>
+                  <option value="360">SD (360p)</option>
+                </select>
+              </div>
+            </div>
+
+            <button id="download-btn" class="w-full py-3.5 px-4 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-[0.98] flex justify-center items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+              Download
+            </button>
+            <p class="text-xs text-center text-slate-400 dark:text-slate-500">Note: 4K downloads may take longer due to merging video and audio.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('dl-form') as HTMLFormElement;
+  const urlInput = document.getElementById('url-input') as HTMLInputElement;
+  const fetchBtn = document.getElementById('fetch-btn') as HTMLButtonElement;
+  const fetchText = document.getElementById('fetch-text');
+  const fetchSpinner = document.getElementById('fetch-spinner');
+  
+  const errorMsg = document.getElementById('error-message');
+  const previewCard = document.getElementById('preview-card');
+  const videoThumb = document.getElementById('video-thumb') as HTMLImageElement;
+  const videoTitle = document.getElementById('video-title');
+  const videoDuration = document.getElementById('video-duration');
+  
+  const formatSelect = document.getElementById('format-select') as HTMLSelectElement;
+  const resContainer = document.getElementById('res-container');
+  const resSelect = document.getElementById('res-select') as HTMLSelectElement;
+  const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement;
+
+  let currentVideoUrl = '';
+  let currentVideoTitle = '';
+
+  const setLoading = (isLoading: boolean) => {
+    fetchBtn.disabled = isLoading;
+    urlInput.disabled = isLoading;
+    if (isLoading) {
+      fetchText?.classList.add('hidden');
+      fetchSpinner?.classList.remove('hidden');
+    } else {
+      fetchText?.classList.remove('hidden');
+      fetchSpinner?.classList.add('hidden');
+    }
+  };
+
+  const showError = (msg: string) => {
+    if (errorMsg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.remove('hidden');
+    }
+  };
+
+  const hideError = () => {
+    errorMsg?.classList.add('hidden');
+  };
+
+  const showPreview = (data: any) => {
+    currentVideoUrl = urlInput.value;
+    currentVideoTitle = data.title;
+    
+    if (videoThumb) videoThumb.src = data.thumbnail;
+    if (videoTitle) videoTitle.textContent = data.title;
+    if (videoDuration) videoDuration.textContent = data.duration || 'Live';
+    
+    // Check available formats and disable resolutions not available
+    const availableHeights = data.formats.map((f:any) => f.height).filter(Boolean);
+    const maxHeight = Math.max(...availableHeights, 360);
+    
+    Array.from(resSelect.options).forEach(opt => {
+      opt.disabled = parseInt(opt.value) > maxHeight;
+    });
+    
+    // Select the highest available by default up to 1080p
+    let defaultRes = "1080";
+    if (maxHeight < 1080) defaultRes = String(maxHeight);
+    
+    const validDefault = Array.from(resSelect.options).find(o => !o.disabled && o.value <= defaultRes);
+    if (validDefault) resSelect.value = validDefault.value;
+
+    previewCard?.classList.remove('hidden');
+    // small timeout to allow display:block to apply before animating opacity
+    setTimeout(() => {
+      previewCard?.classList.remove('opacity-0', 'translate-y-4');
+    }, 50);
+  };
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const url = urlInput.value.trim();
+    if (!url) return;
+
+    hideError();
+    setLoading(true);
+    previewCard?.classList.add('opacity-0', 'translate-y-4');
+    setTimeout(() => previewCard?.classList.add('hidden'), 300);
+
+    try {
+      const res = await fetch('/api/info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Failed to fetch video info');
+      showPreview(data);
+    } catch (err: any) {
+      showError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  formatSelect?.addEventListener('change', () => {
+    if (formatSelect.value === 'mp3') {
+      resContainer?.classList.add('opacity-50', 'pointer-events-none');
+    } else {
+      resContainer?.classList.remove('opacity-50', 'pointer-events-none');
+    }
+  });
+
+  downloadBtn?.addEventListener('click', () => {
+    const type = formatSelect.value;
+    const res = resSelect.value;
+    const url = encodeURIComponent(currentVideoUrl);
+    const title = encodeURIComponent(currentVideoTitle);
+    
+    // Trigger native download
+    window.location.href = `/api/download?url=${url}&type=${type}&res=${res}&title=${title}`;
+  });
+
+  // Keyboard shortcut 'C' to clear input and focus
+  document.addEventListener('keydown', (e) => {
+    if (e.target instanceof HTMLInputElement && e.target !== urlInput) return;
+    if (e.target instanceof HTMLTextAreaElement) return;
+    
+    if (e.key.toLowerCase() === 'c' && document.activeElement !== urlInput) {
+      e.preventDefault();
+      urlInput.value = '';
+      urlInput.focus();
+      hideError();
+      previewCard?.classList.add('opacity-0', 'translate-y-4');
+      setTimeout(() => previewCard?.classList.add('hidden'), 300);
+    }
+  });
+</script>
