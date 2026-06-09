@@ -1,77 +1,154 @@
 ---
 ---
-<div class="max-w-3xl mx-auto w-full p-6 md:p-10 bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700/50 backdrop-blur-sm transition-all duration-300">
-  <div class="space-y-6">
-    <div class="space-y-2 text-center">
-      <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-        YouTube Downloader 4K
-      </h1>
-      <p class="text-slate-500 dark:text-slate-400 font-medium">Download any YouTube video in MP4 or MP3, up to 4K resolution.</p>
+
+<div class="w-full flex flex-col items-center">
+  <!-- Search Bar mimicking YouTube's header search -->
+  <form id="dl-form" class="w-full max-w-3xl mx-auto mb-6 relative flex shadow-sm">
+    <div class="flex w-full items-center">
+      <div class="flex-1 border border-[#303030] bg-[#121212] rounded-l-full px-6 py-3 md:py-4 focus-within:border-[#1c62b9] flex items-center shadow-inner transition-colors">
+        <svg class="w-5 h-5 text-[#aaaaaa] mr-3 hidden md:block" fill="currentColor" viewBox="0 0 24 24"><path d="M20.87,20.17l-5.59-5.59C16.35,13.35,17,11.75,17,10c0-3.87-3.13-7-7-7s-7,3.13-7,7s3.13,7,7,7c1.75,0,3.35-0.65,4.58-1.71 l5.59,5.59L20.87,20.17z M10,16c-3.31,0-6-2.69-6-6s2.69-6,6-6s6,2.69,6,6S13.31,16,10,16z"/></svg>
+        <input 
+          id="url-input" 
+          type="url" 
+          placeholder="Search or paste YouTube link" 
+          class="bg-transparent w-full focus:outline-none text-[#f1f1f1] text-lg md:text-xl placeholder-[#aaaaaa]" 
+          required 
+        />
+      </div>
+      <button 
+        id="fetch-btn" 
+        type="submit" 
+        class="bg-[#222222] border border-l-0 border-[#303030] hover:bg-[#303030] px-6 md:px-8 py-3 md:py-4 rounded-r-full transition-colors flex items-center justify-center group"
+      >
+        <svg id="fetch-icon" class="w-6 h-6 text-[#f1f1f1]" fill="currentColor" viewBox="0 0 24 24"><path d="M20.87,20.17l-5.59-5.59C16.35,13.35,17,11.75,17,10c0-3.87-3.13-7-7-7s-7,3.13-7,7s3.13,7,7,7c1.75,0,3.35-0.65,4.58-1.71 l5.59,5.59L20.87,20.17z M10,16c-3.31,0-6-2.69-6-6s2.69-6,6-6s6,2.69,6,6S13.31,16,10,16z"/></svg>
+        <svg id="fetch-spinner" class="animate-spin h-6 w-6 text-[#f1f1f1] hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </button>
+    </div>
+  </form>
+
+  <div id="error-message" class="hidden p-4 rounded-xl bg-red-900/30 text-red-400 border border-red-800/50 text-sm font-medium w-full max-w-3xl mb-4 mx-auto"></div>
+
+  <!-- Video Preview mimicking YouTube Watch Page -->
+  <div id="preview-card" class="hidden w-full max-w-6xl mx-auto flex flex-col xl:flex-row gap-6 mt-4 pb-20">
+    <div class="flex-1">
+      <!-- Video Player Area -->
+      <div class="w-full aspect-video bg-black rounded-xl overflow-hidden relative group shadow-lg">
+        <img id="video-thumb" class="w-full h-full object-cover" src="" alt="Thumbnail">
+        <!-- Play button overlay -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+           <div class="w-16 h-12 bg-black/80 rounded-xl flex items-center justify-center group-hover:bg-[#ff0000] transition-colors">
+              <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8,5.14V19.14L19,12.14L8,5.14Z"/></svg>
+           </div>
+        </div>
+        <div id="video-duration" class="absolute bottom-3 right-3 bg-black/80 text-white text-xs font-bold px-1.5 py-0.5 rounded"></div>
+      </div>
+      
+      <!-- Video Info -->
+      <div class="mt-4 px-2 xl:px-0">
+        <h1 id="video-title" class="text-[20px] font-bold text-[#f1f1f1] leading-tight line-clamp-2"></h1>
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between mt-3 gap-4">
+          
+          <!-- Channel Info Dummy -->
+          <div class="flex items-center gap-3">
+             <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center text-lg font-bold text-white shadow-sm">Y</div>
+             <div class="flex flex-col justify-center leading-snug">
+               <h3 class="font-bold text-[#f1f1f1] text-[16px]">YouTubeDL Content</h3>
+               <p class="text-[#aaaaaa] text-[12px]">2.4M subscribers</p>
+             </div>
+             <button class="bg-[#f1f1f1] text-[#0f0f0f] font-medium text-sm px-4 h-9 rounded-full ml-3 hover:bg-[#d9d9d9] transition-colors">Subscribe</button>
+          </div>
+
+          <!-- Action Row mimicking YT buttons -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+             <div class="flex items-center bg-[#272727] rounded-full h-9 shadow-sm">
+                <select id="format-select" class="bg-transparent text-sm font-medium text-[#f1f1f1] pl-4 pr-2 h-full focus:outline-none appearance-none cursor-pointer border-r border-[#3f3f3f]">
+                  <option value="mp4" class="bg-[#272727]">Video (MP4)</option>
+                  <option value="mp3" class="bg-[#272727]">Audio (MP3)</option>
+                </select>
+                <select id="res-select" class="bg-transparent text-sm font-medium text-[#f1f1f1] pl-2 pr-4 h-full focus:outline-none appearance-none cursor-pointer">
+                  <option value="2160" class="bg-[#272727]">4K</option>
+                  <option value="1440" class="bg-[#272727]">1440p</option>
+                  <option value="1080" selected class="bg-[#272727]">1080p</option>
+                  <option value="720" class="bg-[#272727]">720p</option>
+                  <option value="480" class="bg-[#272727]">480p</option>
+                  <option value="360" class="bg-[#272727]">360p</option>
+                </select>
+             </div>
+
+             <button id="download-btn" class="flex items-center gap-2 bg-[#272727] hover:bg-[#3f3f3f] px-4 h-9 rounded-full text-sm font-medium transition-colors shadow-sm">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17,18v1H6v-1H17z M16.5,9l-1.4-1.5L12,10.6V3h-2v7.6L6.9,7.5L5.5,9l6,6L16.5,9z"/></svg>
+                Download
+             </button>
+          </div>
+        </div>
+        
+        <!-- Description box mimic -->
+        <div class="mt-4 bg-[#272727] rounded-xl p-3 text-sm hover:bg-[#3f3f3f] transition-colors cursor-pointer">
+           <div class="font-bold text-[#f1f1f1] mb-1">1.2M views  &bull;  Premiered today</div>
+           <p class="text-[#f1f1f1]">Get your video in high quality format instantly. <br>Our backend will merge 4K video and audio directly for you.</p>
+           <p class="text-[#aaaaaa] mt-2 font-medium">Show less</p>
+        </div>
+      </div>
     </div>
 
-    <form id="dl-form" class="relative">
-      <div class="relative flex items-center">
-        <input 
-          type="url" 
-          id="url-input"
-          placeholder="Paste YouTube link here..." 
-          required
-          class="w-full py-4 pl-6 pr-32 text-lg rounded-2xl bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-300 shadow-inner"
-        >
-        <button 
-          type="submit" 
-          id="fetch-btn"
-          class="absolute right-2 top-2 bottom-2 px-6 font-bold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-        >
-          <span id="fetch-text">Start</span>
-          <svg id="fetch-spinner" class="hidden w-5 h-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-        </button>
-      </div>
-    </form>
-
-    <div id="error-message" class="hidden p-4 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/50 text-sm font-medium"></div>
-
-    <div id="preview-card" class="hidden overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 opacity-0 transform translate-y-4 transition-all duration-500">
-      <div class="md:flex">
-        <div class="md:shrink-0 md:w-64 relative bg-black">
-          <img id="video-thumb" class="h-full w-full object-cover" src="" alt="Thumbnail">
-          <div id="video-duration" class="absolute bottom-2 right-2 bg-black/80 text-white text-xs font-bold px-2 py-1 rounded"></div>
-        </div>
-        <div class="p-6 flex flex-col justify-between w-full space-y-4">
-          <div>
-            <h3 id="video-title" class="text-xl font-bold line-clamp-2 text-slate-800 dark:text-slate-100"></h3>
-          </div>
-          
-          <div class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div class="space-y-1">
-                <label class="text-sm font-semibold text-slate-500 dark:text-slate-400">Format</label>
-                <select id="format-select" class="w-full p-2.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-shadow font-medium">
-                  <option value="mp4">Video (MP4)</option>
-                  <option value="mp3">Audio (MP3)</option>
-                </select>
+    <!-- Sidebar recommendations dummy -->
+    <div class="w-full xl:w-[400px] flex flex-col gap-3 px-2 xl:px-0 mt-6 xl:mt-0">
+        <div class="flex gap-2 group cursor-pointer mb-2">
+           <div class="w-[168px] h-[94px] bg-[#272727] rounded-xl flex-shrink-0 relative overflow-hidden group-hover:opacity-80 transition-opacity">
+              <div class="absolute inset-0 flex items-center justify-center">
+                 <svg class="w-8 h-8 text-[#aaaaaa]" fill="currentColor" viewBox="0 0 24 24"><path d="M8,5.14V19.14L19,12.14L8,5.14Z"/></svg>
               </div>
-              <div id="res-container" class="space-y-1">
-                <label class="text-sm font-semibold text-slate-500 dark:text-slate-400">Resolution</label>
-                <select id="res-select" class="w-full p-2.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-shadow font-medium">
-                  <option value="2160">4K (2160p)</option>
-                  <option value="1440">2K (1440p)</option>
-                  <option value="1080" selected>HD (1080p)</option>
-                  <option value="720">HD (720p)</option>
-                  <option value="480">SD (480p)</option>
-                  <option value="360">SD (360p)</option>
-                </select>
-              </div>
-            </div>
-
-            <button id="download-btn" class="w-full py-3.5 px-4 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-[0.98] flex justify-center items-center gap-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-              Download
-            </button>
-            <p class="text-xs text-center text-slate-400 dark:text-slate-500">Note: 4K downloads may take longer due to merging video and audio.</p>
-          </div>
+              <div class="absolute bottom-1 right-1 bg-black text-white text-xs px-1 font-bold rounded">10:01</div>
+           </div>
+           <div class="flex flex-col py-1">
+              <h4 class="text-[#f1f1f1] font-medium text-[14px] leading-tight line-clamp-2">How to download in 4K resolution using YouTubeDL</h4>
+              <p class="text-[#aaaaaa] text-[12px] mt-1 hover:text-[#f1f1f1]">YouTubeDL Docs</p>
+              <p class="text-[#aaaaaa] text-[12px]">2.1M views &bull; 2 days ago</p>
+           </div>
         </div>
-      </div>
+        <div class="flex gap-2 group cursor-pointer mb-2">
+           <div class="w-[168px] h-[94px] bg-[#272727] rounded-xl flex-shrink-0 relative overflow-hidden group-hover:opacity-80 transition-opacity">
+              <div class="absolute inset-0 flex items-center justify-center">
+                 <svg class="w-8 h-8 text-[#aaaaaa]" fill="currentColor" viewBox="0 0 24 24"><path d="M8,5.14V19.14L19,12.14L8,5.14Z"/></svg>
+              </div>
+              <div class="absolute bottom-1 right-1 bg-black text-white text-xs px-1 font-bold rounded">05:22</div>
+           </div>
+           <div class="flex flex-col py-1">
+              <h4 class="text-[#f1f1f1] font-medium text-[14px] leading-tight line-clamp-2">Download YouTube videos as MP3 fast</h4>
+              <p class="text-[#aaaaaa] text-[12px] mt-1 hover:text-[#f1f1f1]">YouTubeDL Docs</p>
+              <p class="text-[#aaaaaa] text-[12px]">800K views &bull; 1 week ago</p>
+           </div>
+        </div>
+        <div class="flex gap-2 group cursor-pointer mb-2">
+           <div class="w-[168px] h-[94px] bg-[#272727] rounded-xl flex-shrink-0 relative overflow-hidden group-hover:opacity-80 transition-opacity">
+              <div class="absolute inset-0 flex items-center justify-center">
+                 <svg class="w-8 h-8 text-[#aaaaaa]" fill="currentColor" viewBox="0 0 24 24"><path d="M8,5.14V19.14L19,12.14L8,5.14Z"/></svg>
+              </div>
+              <div class="absolute bottom-1 right-1 bg-black text-white text-xs px-1 font-bold rounded">12:34</div>
+           </div>
+           <div class="flex flex-col py-1">
+              <h4 class="text-[#f1f1f1] font-medium text-[14px] leading-tight line-clamp-2">Is YouTubeDL safe and secure to use?</h4>
+              <p class="text-[#aaaaaa] text-[12px] mt-1 hover:text-[#f1f1f1]">Security Review</p>
+              <p class="text-[#aaaaaa] text-[12px]">1.5M views &bull; 1 month ago</p>
+           </div>
+        </div>
+        <div class="flex gap-2 group cursor-pointer mb-2">
+           <div class="w-[168px] h-[94px] bg-[#272727] rounded-xl flex-shrink-0 relative overflow-hidden group-hover:opacity-80 transition-opacity">
+              <div class="absolute inset-0 flex items-center justify-center">
+                 <svg class="w-8 h-8 text-[#aaaaaa]" fill="currentColor" viewBox="0 0 24 24"><path d="M8,5.14V19.14L19,12.14L8,5.14Z"/></svg>
+              </div>
+              <div class="absolute bottom-1 right-1 bg-black text-white text-xs px-1 font-bold rounded">08:15</div>
+           </div>
+           <div class="flex flex-col py-1">
+              <h4 class="text-[#f1f1f1] font-medium text-[14px] leading-tight line-clamp-2">Best practices for offline viewing</h4>
+              <p class="text-[#aaaaaa] text-[12px] mt-1 hover:text-[#f1f1f1]">Tech Guide</p>
+              <p class="text-[#aaaaaa] text-[12px]">500K views &bull; 3 months ago</p>
+           </div>
+        </div>
     </div>
   </div>
 </div>
@@ -80,7 +157,7 @@
   const form = document.getElementById('dl-form') as HTMLFormElement;
   const urlInput = document.getElementById('url-input') as HTMLInputElement;
   const fetchBtn = document.getElementById('fetch-btn') as HTMLButtonElement;
-  const fetchText = document.getElementById('fetch-text');
+  const fetchIcon = document.getElementById('fetch-icon');
   const fetchSpinner = document.getElementById('fetch-spinner');
   
   const errorMsg = document.getElementById('error-message');
@@ -90,7 +167,6 @@
   const videoDuration = document.getElementById('video-duration');
   
   const formatSelect = document.getElementById('format-select') as HTMLSelectElement;
-  const resContainer = document.getElementById('res-container');
   const resSelect = document.getElementById('res-select') as HTMLSelectElement;
   const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement;
 
@@ -101,10 +177,10 @@
     fetchBtn.disabled = isLoading;
     urlInput.disabled = isLoading;
     if (isLoading) {
-      fetchText?.classList.add('hidden');
+      fetchIcon?.classList.add('hidden');
       fetchSpinner?.classList.remove('hidden');
     } else {
-      fetchText?.classList.remove('hidden');
+      fetchIcon?.classList.remove('hidden');
       fetchSpinner?.classList.add('hidden');
     }
   };
@@ -134,6 +210,11 @@
     
     Array.from(resSelect.options).forEach(opt => {
       opt.disabled = parseInt(opt.value) > maxHeight;
+      if(opt.disabled) {
+         opt.classList.add('text-[#777777]');
+      } else {
+         opt.classList.remove('text-[#777777]');
+      }
     });
     
     // Select the highest available by default up to 1080p
@@ -144,10 +225,6 @@
     if (validDefault) resSelect.value = validDefault.value;
 
     previewCard?.classList.remove('hidden');
-    // small timeout to allow display:block to apply before animating opacity
-    setTimeout(() => {
-      previewCard?.classList.remove('opacity-0', 'translate-y-4');
-    }, 50);
   };
 
   form?.addEventListener('submit', async (e) => {
@@ -157,8 +234,7 @@
 
     hideError();
     setLoading(true);
-    previewCard?.classList.add('opacity-0', 'translate-y-4');
-    setTimeout(() => previewCard?.classList.add('hidden'), 300);
+    previewCard?.classList.add('hidden');
 
     try {
       const res = await fetch('/api/info', {
@@ -179,9 +255,9 @@
 
   formatSelect?.addEventListener('change', () => {
     if (formatSelect.value === 'mp3') {
-      resContainer?.classList.add('opacity-50', 'pointer-events-none');
+      resSelect.classList.add('opacity-50', 'pointer-events-none');
     } else {
-      resContainer?.classList.remove('opacity-50', 'pointer-events-none');
+      resSelect.classList.remove('opacity-50', 'pointer-events-none');
     }
   });
 
@@ -191,11 +267,9 @@
     const url = encodeURIComponent(currentVideoUrl);
     const title = encodeURIComponent(currentVideoTitle);
     
-    // Trigger native download
     window.location.href = `/api/download?url=${url}&type=${type}&res=${res}&title=${title}`;
   });
 
-  // Keyboard shortcut 'C' to clear input and focus
   document.addEventListener('keydown', (e) => {
     if (e.target instanceof HTMLInputElement && e.target !== urlInput) return;
     if (e.target instanceof HTMLTextAreaElement) return;
@@ -205,8 +279,7 @@
       urlInput.value = '';
       urlInput.focus();
       hideError();
-      previewCard?.classList.add('opacity-0', 'translate-y-4');
-      setTimeout(() => previewCard?.classList.add('hidden'), 300);
+      previewCard?.classList.add('hidden');
     }
   });
 </script>

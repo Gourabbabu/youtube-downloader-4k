@@ -19,37 +19,74 @@ const { title, description } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <style is:global>
-      :root {
-        --bg-light: #f8fafc;
-        --bg-dark: #0f172a;
-        --text-light: #0f172a;
-        --text-dark: #f8fafc;
-      }
       body {
-        transition: background-color 0.3s ease, color 0.3s ease;
+        background-color: #0f0f0f;
+        color: #f1f1f1;
+        font-family: "Roboto", "Arial", sans-serif;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
     </style>
-    <script is:inline>
-      // Check for saved user preference or system preference
-      const getThemePreference = () => {
-        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-          return localStorage.getItem('theme');
-        }
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      };
-      const isDark = getThemePreference() === 'dark';
-      document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
-
-      if (typeof localStorage !== 'undefined') {
-        const observer = new MutationObserver(() => {
-          const isDark = document.documentElement.classList.contains('dark');
-          localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        });
-        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-      }
-    </script>
   </head>
-  <body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50 min-h-screen antialiased selection:bg-blue-500 selection:text-white">
-    <slot />
+  <body class="bg-[#0f0f0f] text-[#f1f1f1] min-h-screen antialiased selection:bg-red-500 selection:text-white flex flex-col">
+    <!-- Navbar -->
+    <header class="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f] flex items-center justify-between px-4 z-50">
+      <div class="flex items-center gap-4">
+        <button class="p-2 hover:bg-[#272727] rounded-full hidden sm:block text-[#f1f1f1]">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M21,6H3V5h18V6z M21,11H3v1h18V11z M21,17H3v1h18V17z"></path></svg>
+        </button>
+        <a href="/" class="flex items-center gap-1" title="YouTubeDL Home">
+          <svg class="w-8 h-8 text-[#ff0000]" fill="currentColor" viewBox="0 0 24 24"><path d="M21.58,7.19C21.34,6.31,20.65,5.62,19.78,5.38C18.19,4.95,12,4.95,12,4.95s-6.19,0-7.78,0.43C3.35,5.62,2.66,6.31,2.42,7.19C2,8.78,2,12,2,12s0,3.22,0.42,4.81c0.24,0.88,0.93,1.57,1.8,1.81C5.81,19.05,12,19.05,12,19.05s6.19,0,7.78-0.43c0.88-0.24,1.57-0.93,1.8-1.81C22,15.22,22,12,22,12S22,8.78,21.58,7.19z M10,15V9l5.2,3L10,15z"></path></svg>
+          <span class="text-xl font-bold tracking-tighter" style="font-family: 'Oswald', sans-serif;">YouTube<sup class="text-[#aaaaaa] font-normal text-xs ml-0.5">DL</sup></span>
+        </a>
+      </div>
+      
+      <!-- Center empty for spacing like YT -->
+      <div class="flex-1 max-w-[720px] ml-4 sm:ml-10 hidden sm:flex items-center">
+      </div>
+      
+      <div class="flex items-center gap-2 sm:gap-4">
+        <button class="p-2 hover:bg-[#272727] rounded-full hidden sm:block text-[#f1f1f1]">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M14,13h-3v3H9v-3H6v-2h3V8h2v3h3V13z M17,6H3v12h14v-1.5l3,1.5v-6L17,7.5V6z"></path></svg>
+        </button>
+        <button class="p-2 hover:bg-[#272727] rounded-full text-[#f1f1f1]">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10,20h4c0,1.1-0.9,2-2,2S10,21.1,10,20z M20,17.35V19H4v-1.65l2-1.88v-5.15c0-2.92,1.56-5.22,4-5.98V3.96c0-1.42,1.49-2.5,2.99-1.76C13.64,2.52,14,3.23,14,3.96l0,0.39c2.44,0.75,4,3.06,4,5.98v5.15L20,17.35z"></path></svg>
+        </button>
+        <div class="w-8 h-8 rounded-full bg-[#1c62b9] flex items-center justify-center text-sm font-bold ml-2 cursor-pointer">Y</div>
+      </div>
+    </header>
+
+    <div class="flex pt-14 h-[calc(100vh)]">
+      <!-- Sidebar -->
+      <aside class="w-[72px] lg:w-60 bg-[#0f0f0f] hidden sm:flex flex-col items-center lg:items-start py-3 overflow-y-auto scrollbar-hide hover:scrollbar-default pb-20 z-40 fixed h-[calc(100vh-56px)]">
+        <a href="/" class="w-full px-1 lg:px-3 py-2 flex lg:flex-row flex-col items-center lg:items-center gap-1 lg:gap-6 hover:bg-[#272727] rounded-lg lg:rounded-xl mx-2 cursor-pointer bg-[#272727]">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12,4.3L3.3,13h2.1v6h4.8v-4.2h3.5v4.2h4.8v-6h2.1L12,4.3z M12,2.8L22.9,13H19v7.5h-7.5v-4.2H12v4.2H4.5V13H0.6L12,2.8z"/></svg>
+          <span class="text-[10px] lg:text-sm lg:font-medium mt-1 lg:mt-0">Home</span>
+        </a>
+        <div class="w-full px-1 lg:px-3 py-2 flex lg:flex-row flex-col items-center lg:items-center gap-1 lg:gap-6 hover:bg-[#272727] rounded-lg lg:rounded-xl mx-2 cursor-pointer">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10,14.65v-5.3L15,12L10,14.65z M22,3.6v16.8H2V3.6H22z M21,4.6H3v14.8h18V4.6z"/></svg>
+          <span class="text-[10px] lg:text-sm lg:font-medium mt-1 lg:mt-0">Shorts</span>
+        </div>
+        <div class="w-full px-1 lg:px-3 py-2 flex lg:flex-row flex-col items-center lg:items-center gap-1 lg:gap-6 hover:bg-[#272727] rounded-lg lg:rounded-xl mx-2 cursor-pointer">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.7,8.7H5.3V7h13.4V8.7z M21.2,12H2.8v-1.7h18.4V12z M22.9,15.4H1.1v-1.7h21.8V15.4z M21.2,18.7H2.8v-1.7h18.4V18.7z"/></svg>
+          <span class="text-[10px] lg:text-sm lg:font-medium mt-1 lg:mt-0">Subscriptions</span>
+        </div>
+        <hr class="w-full border-[#303030] my-3 lg:block hidden">
+        <div class="w-full px-1 lg:px-3 py-2 flex lg:flex-row flex-col items-center lg:items-center gap-1 lg:gap-6 hover:bg-[#272727] rounded-lg lg:rounded-xl mx-2 cursor-pointer">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11,7l6,3.5L11,14V7z M18,20H4V6H3v15h15V20z M21,3H6v15h15V3z M7,4h13v13H7V4z"/></svg>
+          <span class="text-[10px] lg:text-sm lg:font-medium mt-1 lg:mt-0 text-center lg:text-left">Library</span>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 sm:ml-[72px] lg:ml-60 p-4 sm:p-6 w-full max-w-[1600px] mx-auto overflow-y-auto">
+        <slot />
+      </main>
+    </div>
   </body>
 </html>
