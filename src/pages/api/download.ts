@@ -27,8 +27,12 @@ export const GET: APIRoute = async ({ request }) => {
       noWarnings: true,
       noCallHome: true,
       noCheckCertificate: true,
-      ffmpegLocation: 'C:\\Users\\ASUS\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin\\ffmpeg.exe'
     };
+
+    // Use hardcoded path only for local Windows dev
+    if (process.platform === 'win32' && process.env.NODE_ENV !== 'production') {
+      options.ffmpegLocation = 'C:\\Users\\ASUS\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin\\ffmpeg.exe';
+    }
 
     if (type === 'mp3') {
       options.extractAudio = true;
